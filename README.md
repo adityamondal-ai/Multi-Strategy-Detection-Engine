@@ -68,7 +68,10 @@ Wrapped in a beautifully designed, state-of-the-art glassmorphism UI, MultiScann
 
 ## 📸 Screenshots
 
-*(Add your screenshots here by dragging and dropping them into the README!)*
+<img width="1919" height="1073" alt="image" src="https://github.com/user-attachments/assets/9d20c1a5-828c-4dbf-a139-6bafefeebcf6" />
+<img width="1919" height="1055" alt="image" src="https://github.com/user-attachments/assets/01926374-7682-4092-bd50-cf9358a8643c" />
+
+
 
 1. **The Dynamic Dashboard:** Showcasing the glassmorphism table and the custom dropdown selectors.
 2. **Settings Modal:** Displaying the decoupled Weekly vs. Monthly volume filters.
