@@ -43,12 +43,14 @@ Wrapped in a beautifully designed, state-of-the-art glassmorphism UI, MultiScann
 
 ## 🚀 Getting Started
 
-### Running the Pre-compiled Executable (Windows)
-1. Navigate to `dist/MultiScanner/`.
-2. Double-click `MultiScanner.exe`.
-3. A local server will instantly boot up, and the GUI will automatically open in a native window.
+### 🏃‍♂️ Running the App (No Coding Required)
+1. Go to the **Releases** section on the right side of this GitHub page.
+2. Download the `MultiScanner.zip` file.
+3. Right-click the downloaded file and select **Extract All...**
+4. Open the extracted folder and double-click `MultiScanner.exe`.
+5. A local server will instantly boot up, and the GUI will automatically open in a native window!
 
-### Running from Source (Development)
+### 💻 Running from Source (For Developers)
 1. Clone the repository.
 2. Create a virtual environment:
    ```bash
@@ -57,7 +59,7 @@ Wrapped in a beautifully designed, state-of-the-art glassmorphism UI, MultiScann
    ```
 3. Install the dependencies:
    ```bash
-   pip install flask pandas yfinance requests
+   pip install flask pandas yfinance requests pywebview
    ```
 4. Run the application:
    ```bash
