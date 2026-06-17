@@ -1,0 +1,11 @@
+# Ignore Virtual Environment
+venv/
+__pycache__/
+
+# Ignore PyInstaller build folders and files
+build/
+dist/
+*.spec
+
+# Ignore local database (so you don't share your private settings/history)
+scanner.db

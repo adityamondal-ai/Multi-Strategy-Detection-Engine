@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bullish Scanner (yfinance)</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Settings Modal -->
+        <div id="settingsModal" class="modal">
+            <div class="modal-content glass">
+                <span class="close">&times;</span>
+                <h2>Configuration</h2>
+                <form id="settingsForm">
+                <div class="form-group">
+                    <label>SMTP Email</label>
+                    <input type="email" id="SMTP_EMAIL" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>SMTP Password / App Password</label>
+                    <input type="password" id="SMTP_PASSWORD" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Alert Receiving Email</label>
+                    <input type="email" id="ALERT_EMAIL" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Max Stock Price (₹)</label>
+                    <input type="number" id="MAX_STOCK_PRICE" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Universe</label>
+                    <div class="custom-dropdown form-control" id="universeDropdown">
+                        <div class="custom-dropdown-selected">Nifty 50</div>
+                        <div class="custom-dropdown-options">
+                            <div class="custom-dropdown-option selected" data-value="Nifty 50">Nifty 50</div>
+                            <div class="custom-dropdown-option" data-value="Nifty 500">Nifty 500</div>
+                            <div class="custom-dropdown-option" data-value="All NSE">All NSE</div>
+                            <div class="custom-dropdown-option" data-value="All BSE">All BSE</div>
+                            <div class="custom-dropdown-option" data-value="All NSE & BSE">All NSE & BSE</div>
+                        </div>
+                        <input type="hidden" id="UNIVERSE" value="Nifty 50">
+                    </div>
+                </div>
+                <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="ENABLE_VOLUME_FILTER" style="width: auto;">
+                        Enable Monthly Volume Filter (for 5-Month Strategy)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Minimum Average Monthly Volume</label>
+                    <input type="number" id="MIN_VOLUME" class="form-control" placeholder="e.g. 100000">
+                </div>
+                <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="ENABLE_WEEKLY_VOLUME_FILTER" style="width: auto;">
+                        Enable Weekly Volume Filter (for 52W & ATH Strategies)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Minimum Average Weekly Volume</label>
+                    <input type="number" id="MIN_WEEKLY_VOLUME" class="form-control" placeholder="e.g. 50000">
+                </div>
+                <button type="submit" class="btn primary-btn" style="width: 100%; margin-top: 10px;">Save Settings</button>
+            </form>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <div>
+                    <h1>MultiScanner</h1>
+                    <p class="subtitle">Multi-Strategy Detection Engine</p>
+                </div>
+                <div class="header-actions">
+                    <div class="custom-dropdown strategy-dropdown" id="strategyDropdown" style="margin-right: 15px; min-width: 250px;">
+                        <div class="custom-dropdown-selected">52-Week High Breakout</div>
+                        <div class="custom-dropdown-options">
+                            <div class="custom-dropdown-option selected" data-value="52w">52-Week High Breakout</div>
+                            <div class="custom-dropdown-option" data-value="ath">All-Time High Breakout</div>
+                            <div class="custom-dropdown-option" data-value="5m">5-Month Upper Closing</div>
+                        </div>
+                        <input type="hidden" id="strategySelect" value="52w">
+                    </div>
+                    <button id="btnScan" class="btn primary-btn pulse-anim">Manual Scan</button>
+                    <button id="btnStopScan" class="btn danger-btn" style="display: none;">Stop Scan</button>
+                    <button id="btnSettings" class="btn secondary-btn">Settings</button>
+                </div>
+            </header>
+
+            <section class="dashboard-stats">
+                <div class="stat-card glass">
+                    <h3>Active Alerts</h3>
+                    <p id="activeAlertsCount" class="stat-value">0</p>
+                </div>
+                <div class="stat-card glass">
+                    <h3>Last Scan</h3>
+                    <p id="lastScanTime" class="stat-value">--:--</p>
+                </div>
+                <div class="stat-card glass">
+                    <h3>System Status</h3>
+                    <p class="stat-value status-ok">Online</p>
+                </div>
+            </section>
+
+            <section class="table-section glass">
+                <div class="table-tabs" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <button id="tabRecent" class="tab-btn active">Recent Scanned Stocks</button>
+                        <button id="tabWatchlist" class="tab-btn">My Watchlist</button>
+                    </div>
+                    <button id="btnClearHistory" class="btn danger-btn" style="padding: 6px 12px; font-size: 0.9em; display: none;">Clear History</button>
+                </div>
+                <div class="table-container">
+                    <table id="entriesTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Symbol</th>
+                                <th>Entry Date</th>
+                                <th>Entry Price</th>
+                                <th>Stop Loss (SL)</th>
+                                <th>Take Profit (TP)</th>
+                                <th>Risk Status</th>
+                                <th>Capital Usage</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/main.js"></script>
+</body>
+</html>
