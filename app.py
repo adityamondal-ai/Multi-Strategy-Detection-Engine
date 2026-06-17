@@ -109,20 +109,53 @@ def api_status():
     })
 
 if __name__ == '__main__':
-    import webview
+    import webbrowser
+    import time
     
     init_db()
     
     def run_server():
+        # Hide the werkzeug startup logs to keep console clean
+        cli = sys.modules['flask.cli']
+        cli.show_server_banner = lambda *x: None
         app.run(host='127.0.0.1', port=5000, use_reloader=False)
         
-    threading.Thread(target=run_server, daemon=True).start()
+    server_thread = threading.Thread(target=run_server, daemon=True)
+    server_thread.start()
     
-    window = webview.create_window('MultiScanner', 'http://127.0.0.1:5000/', width=1200, height=800, min_size=(800, 600))
+    # Wait a moment for the server to bind to the port
+    time.sleep(1)
     
-    def on_closing():
-        os._exit(0)
-        
-    window.events.closed += on_closing
+    # Create the true native desktop window using PyQt5 (No .NET required)
+    from PyQt5.QtCore import QUrl
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5.QtWebEngineWidgets import QWebEngineView
+    import PyQt5.QtGui
     
-    webview.start()
+    qt_app = QApplication(sys.argv)
+    
+    window = QMainWindow()
+    window.setWindowTitle("MultiScanner")
+    window.resize(1200, 800)
+    window.setStyleSheet("QMainWindow { background-color: #0f172a; border: none; }")
+    
+    # Enable gorgeous Windows 11 Native Dark Mode for the Title Bar
+    try:
+        import ctypes
+        hwnd = int(window.winId())
+        DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+        ctypes.windll.dwmapi.DwmSetWindowAttribute(
+            hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ctypes.byref(ctypes.c_int(1)), 4)
+    except Exception:
+        pass
+    
+    # Embed the browser engine directly into the window
+    webview = QWebEngineView()
+    webview.page().setBackgroundColor(PyQt5.QtGui.QColor(15, 23, 42))
+    webview.setUrl(QUrl('http://127.0.0.1:5000/'))
+    
+    window.setCentralWidget(webview)
+    window.show()
+    
+    # Start the native app loop
+    sys.exit(qt_app.exec_())

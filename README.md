@@ -59,7 +59,7 @@ Wrapped in a beautifully designed, state-of-the-art glassmorphism UI, MultiScann
    ```
 3. Install the dependencies:
    ```bash
-   pip install flask pandas yfinance requests pywebview
+   pip install flask pandas yfinance requests PyQt5 PyQtWebEngine
    ```
 4. Run the application:
    ```bash
