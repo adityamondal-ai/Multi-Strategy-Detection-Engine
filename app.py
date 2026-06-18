@@ -118,7 +118,7 @@ if __name__ == '__main__':
         # Hide the werkzeug startup logs to keep console clean
         cli = sys.modules['flask.cli']
         cli.show_server_banner = lambda *x: None
-        app.run(host='127.0.0.1', port=5000, use_reloader=False)
+        app.run(host='127.0.0.1', port=5050, use_reloader=False)
         
     server_thread = threading.Thread(target=run_server, daemon=True)
     server_thread.start()
@@ -152,7 +152,7 @@ if __name__ == '__main__':
     # Embed the browser engine directly into the window
     webview = QWebEngineView()
     webview.page().setBackgroundColor(PyQt5.QtGui.QColor(15, 23, 42))
-    webview.setUrl(QUrl('http://127.0.0.1:5000/'))
+    webview.setUrl(QUrl('http://127.0.0.1:5050/'))
     
     window.setCentralWidget(webview)
     window.show()
