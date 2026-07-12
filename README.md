@@ -65,18 +65,6 @@ Wrapped in a beautifully designed, state-of-the-art glassmorphism UI, MultiScann
    ```bash
    python app.py
    ```
-
----
-
-## 📸 Screenshots
-
-*(Add your screenshots here by dragging and dropping them into the README!)*
-
-1. **The Dynamic Dashboard:** Showcasing the glassmorphism table and the custom dropdown selectors.
-2. **Settings Modal:** Displaying the decoupled Weekly vs. Monthly volume filters.
-
----
-
 ## 📝 License
 
 This project is intended for personal and educational use. Always do your own research before executing real trades based on scanner alerts.
