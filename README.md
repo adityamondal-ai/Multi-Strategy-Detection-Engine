@@ -65,6 +65,92 @@ Wrapped in a beautifully designed, state-of-the-art glassmorphism UI, MultiScann
    ```bash
    python app.py
    ```
+---
+
+## 🔔 Setting Up Email Alerts (Gmail SMTP)
+
+MultiScanner can send you a beautiful HTML email the moment a breakout is detected. This is **completely optional** — the scanner works fine without it.
+
+> **The app uses Gmail's SMTP server with SSL on port 465. You must use a Gmail App Password, NOT your regular Gmail password.**
+
+---
+
+### Step 1 — Enable 2-Step Verification on your Google Account
+
+Gmail App Passwords only work if 2-Step Verification is turned on.
+
+1. Go to **[myaccount.google.com](https://myaccount.google.com)**
+2. Click **Security** in the left sidebar
+3. Under *"How you sign in to Google"*, click **2-Step Verification**
+4. Follow the prompts to enable it
+
+---
+
+### Step 2 — Generate a Gmail App Password
+
+1. Go to **[myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)**
+   *(You must be signed in and have 2-Step Verification enabled)*
+2. In the **"App name"** field, type: `MultiScanner`
+3. Click **Create**
+4. Google will show you a **16-character password** (e.g. `abcd efgh ijkl mnop`)
+5. **Copy it immediately** — it will not be shown again
+6. Remove the spaces when pasting it into the app: `abcdefghijklmnop`
+
+---
+
+### Step 3 — Enter Credentials in MultiScanner
+
+1. Open MultiScanner and click the **Settings** button (top-right)
+2. Fill in the following fields:
+
+   | Field | What to enter |
+   |-------|--------------|
+   | **SMTP Email** | Your Gmail address (e.g. `yourname@gmail.com`) |
+   | **SMTP Password / App Password** | The 16-character App Password from Step 2 (no spaces) |
+   | **Alert Receiving Email** | The email where you want to receive alerts (can be the same Gmail or any other email) |
+
+3. Click **Save Settings**
+
+---
+
+### Step 4 — Test It
+
+Run a **Manual Scan**. If any stocks trigger, an email will be sent automatically. Check your inbox (and spam folder for the first email).
+
+> **Note:** If no stocks trigger during the scan, no email is sent — this is by design.
+
+---
+
+### 🔧 Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| *"Failed to send bulk email alert"* in logs | Double-check the App Password has no spaces and 2FA is enabled |
+| Email lands in spam | Open it and click "Not spam" — subsequent emails will go to inbox |
+| *"Username and Password not accepted"* | You may have entered your regular Gmail password instead of the App Password |
+| App Password page not showing | Make sure 2-Step Verification is fully enabled first |
+| Want to use a different email provider | Change `smtp.gmail.com` and port `465` in `notifier.py` to match your provider's SMTP settings |
+
+---
+
+### 📧 Using Other Email Providers
+
+The app is hardcoded for Gmail SSL (`smtp.gmail.com:465`). To use another provider, edit `notifier.py` line 121:
+
+```python
+# Gmail (default)
+server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+
+# Outlook / Hotmail
+server = smtplib.SMTP('smtp.office365.com', 587)
+server.starttls()
+
+# Yahoo Mail
+server = smtplib.SMTP_SSL('smtp.mail.yahoo.com', 465)
+```
+
+---
+
 ## 📝 License
 
 This project is intended for personal and educational use. Always do your own research before executing real trades based on scanner alerts.
