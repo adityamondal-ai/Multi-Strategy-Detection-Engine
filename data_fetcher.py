@@ -205,11 +205,28 @@ def fetch_data_for_strategy(symbol, strategy_id):
     the given strategy.
     Expected symbol format: 'RELIANCE.NS'  or  '500325.BO'
     """
+    from datetime import date, timedelta
     try:
         if strategy_id == "52w":
-            # Need at least 52 weekly bars. Fetch 2 years to be safe.
-            df = yf.download(tickers=symbol, period="2y", interval="1wk",
-                             progress=False, auto_adjust=False)
+            # We need EXACTLY 52 + 1 (current) = 53 weekly bars.
+            # Using period="2y" is unreliable — if yfinance drops NaN rows
+            # (holidays / incomplete weeks), the tail slice covers fewer than
+            # 52 actual calendar weeks.
+            #
+            # Fix: fetch by explicit date range.
+            #   • end   = today (gets the current in-progress week)
+            #   • start = 57 weeks ago  (52 required + 5-week safety buffer
+            #             to absorb any NaN-dropped rows and still have >= 53)
+            end_date   = date.today()
+            start_date = end_date - timedelta(weeks=57)
+            df = yf.download(
+                tickers=symbol,
+                start=start_date.isoformat(),
+                end=end_date.isoformat(),
+                interval="1wk",
+                progress=False,
+                auto_adjust=False,
+            )
         elif strategy_id == "ath":
             # Need maximum data to find all-time high.
             df = yf.download(tickers=symbol, period="max", interval="1wk",
