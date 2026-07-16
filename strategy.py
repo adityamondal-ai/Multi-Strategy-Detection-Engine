@@ -41,14 +41,22 @@ def load_nifty500_symbols():
         return ["TCS", "RELIANCE", "INFY"]
 
 def evaluate_52w(df):
+    # Need at least 53 weekly bars: 52 previous (1 year) + 1 current
     if len(df) < 53:
         return False, None, None
     current = df.iloc[-1]
-    prev_52 = df.iloc[-53:-1]
-    max_high = prev_52['high'].max()
-    if current['close'] > max_high:
+    prev_week = df.iloc[-2]          # Last fully-closed weekly candle
+    prev_52 = df.iloc[-53:-1]        # The 52 candles before the current one
+
+    # A true 52-week high breakout: current CLOSE exceeds the highest
+    # CLOSING price of the previous 52 weeks (not the wick highs).
+    max_close_52w = prev_52['close'].max()
+
+    if current['close'] > max_close_52w:
         entry = current['close']
-        sl = current['low']
+        # SL = previous week's LOW (a confirmed, fully-closed candle).
+        # Avoids using an incomplete mid-week low from the current candle.
+        sl = prev_week['low']
         risk = entry - sl
         if risk <= 0: return False, None, None
         tp = entry + (3 * risk)
